@@ -1,0 +1,24 @@
+.sketchpad_colorPicker {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.sketchpad_colorPickerItem {
+    width: 50px;
+    height: 50px;
+    border: 0;
+    box-shadow: 1px 1px 5px 0px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    position: relative;
+    transition: 0.25s;
+    bottom: -10px;
+    -webkit-mask: url(pen.svg) no-repeat center bottom;
+    mask: url(pen.svg) no-repeat center bottom;
+}
+
+.sketchpad_colorPickerItem.selected {
+    bottom: 0px;
+}
