@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300&display=swap');
+
 html, body {
     margin: 0;
     padding: 0;
@@ -6,8 +8,94 @@ html, body {
     width: 100%;
 }
 
+body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: #ffffff;
+    opacity: 0.8;
+    background-image: radial-gradient(#e1e1e1 0.5px, #ffffff 0.5px);
+    background-size: 10px 10px;
+}
+
 #sketchpad {
     height: inherit;
     width: 100%;
 }
 
+.colorPicker {
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.colorPickerItem {
+    width: 50px;
+    height: 50px;
+    border: 0;
+    box-shadow: 1px 1px 5px 0px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    position: relative;
+    transition: 0.25s;
+    bottom: -10px;
+    -webkit-mask: url(pen.svg) no-repeat center bottom;
+    mask: url(pen.svg) no-repeat center bottom;
+    -webkit-mask-size: cover;
+    mask-size: cover;
+}
+
+.colorPickerItem.selected {
+    bottom: 0px;
+}
+
+#header, #footer {
+    width: 100%;
+    position: absolute;
+    display: grid;
+}
+
+#header {
+    top: 0;
+    z-index: 1;
+    justify-content: flex-start;
+    pointer-events: none;
+    background-color: rgba(255,255,255,0.9);
+    border-bottom: 1px solid #eee;
+}
+
+#footer {
+    bottom: 0;
+}
+
+.button {
+    background: none;
+    border: none;
+    text-transform: uppercase;
+    margin: 0;
+    padding: 1em;
+    border-left: 1px solid rgba(238, 238, 238, 0.8);
+    cursor: pointer;
+    transition: 0.25s;
+    pointer-events: all;
+    font-family: inherit;
+}
+
+.button:first-of-type {
+    border: none;
+    border-right: 1px solid rgba(238, 238, 238, 0.8);
+}
+
+.button:hover {
+    background-color: rgba(238, 238, 238, 0.8);
+}
+
+.button:active {
+    background-color: rgba(221, 221, 221, 0.8);
+}
+
+.controls {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #eee;
+    box-sizing: border-box;
+    background-color: rgba(255,255,255,0.9);
+}
