@@ -1,7 +1,6 @@
 const Sketchpad = (() => {
     let currPath;
     let currColor = "black";
-    let palette = ["black", "red", "blue", "green", "magenta", "purple", "orange"];
     let isDrawing = false;
     let pathData = "";
     let drawSurface;
@@ -22,7 +21,7 @@ const Sketchpad = (() => {
         path.setAttribute("stroke-linecap", "round");
         path.setAttribute("stroke-linejoin", "round");
         path.setAttribute("stroke-width", "5");
-        path.classList.add("drawPath");
+        path.classList.add("sketchpad_drawPath");
         return path;
     }
         
@@ -51,32 +50,13 @@ const Sketchpad = (() => {
             lastPath.parentNode.removeChild(lastPath);
         }
     }
+
+    function clear() {
+        drawSurface.innerHTML = "";
+    }
     
-    function selectColor(color) {
+    function setColor(color) {
         currColor = color;
-        let selectedItem = document.querySelector(`.sketchpad_colorPickerItem.selected`);
-        if(selectedItem) selectedItem.classList.remove("selected");
-        let newSelectedItem = document.querySelector(`.sketchpad_colorPickerItem[data-color=${color}]`);
-        newSelectedItem.classList.add("selected");
-    }
-    
-    function createColorPickerItem(color) {
-        let button = document.createElement("button");
-        button.dataset.color = color;
-        button.style.backgroundColor = color;
-        button.classList.add("sketchpad_colorPickerItem");
-        button.addEventListener("click", e => selectColor(color));
-        return button;
-    }
-    
-    function populateColorPicker(el) {
-        const picker = document.createElement("div");
-        picker.classList.add("sketchpad_colorPicker");
-        el.appendChild(picker);
-        palette.forEach(color => {
-            picker.appendChild(createColorPickerItem(color))
-        })
-        selectColor(currColor);
     }
 
     function loadCSS(path) {
@@ -98,12 +78,34 @@ const Sketchpad = (() => {
         containerEl.addEventListener("pointerdown", startDrawing);
         document.addEventListener("pointermove", draw);
         document.addEventListener("pointerup", endDrawing);
-        populateColorPicker(containerEl);
+    }
+
+    function download() {
+        const svg = formatSvg(drawSurface.innerHTML);
+        let parser = new DOMParser();
+        let blob = new Blob([svg], {type: "image/svg+xml;charset=utf-8"});
+        triggerDownload(URL.createObjectURL(blob));
+    }
+
+    function formatSvg(rawData) {
+        return `<svg xmlns="http://www.w3.org/2000/svg" version="1.1">${rawData}</svg>`;
+    }
+
+    function triggerDownload(dataUrl) {
+        let downloadLink = document.createElement("a");
+        downloadLink.href = dataUrl;
+        downloadLink.download = `sketchpad-${new Date().getTime()}.svg`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
     }
 
     return {
         init: init,
-        undo: undo
+        undo: undo,
+        setColor: setColor,
+        clear: clear,
+        download: download
     }
 
 })();
