@@ -29,7 +29,8 @@ const Sketchpad = (() => {
         isDrawing = true;
         currPath = createPath();
         drawSurface.appendChild(currPath);  
-        pathData = `M ${event.clientX} ${event.clientY}`;
+        pathData = `M ${event.clientX} ${event.clientY} L ${event.clientX} ${event.clientY}`;
+        currPath.setAttribute("d", pathData);
     }
     
     function draw(event) {
