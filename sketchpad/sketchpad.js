@@ -108,7 +108,7 @@ const Sketchpad = (() => {
         }
 
         async function getRandomPalette() {
-            const response = await fetch('http://colormind.io/api/', {
+            const response = await fetch('//colormind.io/api/', {
                 method: 'POST',
                 body: JSON.stringify({
                     model: "default",
