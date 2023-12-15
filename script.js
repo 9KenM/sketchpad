@@ -1,10 +1,9 @@
 import Sketchpad from './sketchpad/sketchpad.js';
-const palette = ["black", "red", "blue", "green", "magenta", "purple", "orange"];
 
 function selectColor(color) {
     let selectedItem = document.querySelector(`.colorPickerItem.selected`);
     if(selectedItem) selectedItem.classList.remove("selected");
-    let newSelectedItem = document.querySelector(`.colorPickerItem[data-color=${color}]`);
+    let newSelectedItem = document.querySelector(`.colorPickerItem[data-color="${color}"]`);
     newSelectedItem.classList.add("selected");
     Sketchpad.setColor(color);
 }
@@ -12,13 +11,13 @@ function selectColor(color) {
 function createColorPickerItem(color) {
     let button = document.createElement("button");
     button.dataset.color = color;
-    button.style.backgroundColor = color;
+    button.style.backgroundColor = "#"+color;
     button.classList.add("colorPickerItem");
     button.addEventListener("click", e => selectColor(color));
     return button;
 }
 
-function initColorPicker() {
+function initColorPicker(palette) {
     const picker = document.getElementsByClassName("colorPicker")[0];
     palette.forEach(color => {
         picker.appendChild(createColorPickerItem(color))
@@ -37,7 +36,9 @@ function initControls() {
 
 function init() {
     Sketchpad.init(document.getElementById("sketchpad"));
-    initColorPicker();
+    Sketchpad.getRandomPalette().then(res => {
+        initColorPicker(['000000', ...res]);
+    })
     initControls();
 }
 
