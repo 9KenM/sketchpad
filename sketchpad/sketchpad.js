@@ -107,16 +107,38 @@ const Sketchpad = (() => {
             return `${hex}`;
         }
 
+        function getRandomColor() {
+            return new Promise((resolve, reject) => {
+                const rgb = [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)];
+                resolve(rgbToHex(rgb));
+            })
+        }
+
         async function getRandomPalette() {
-            const response = await fetch('http://colormind.io/api/', {
-                method: 'POST',
-                body: JSON.stringify({
-                    model: "default",
-                })
-            });
+            return new Promise((resolve, reject) => {
+                let colors = [];
+                let colorCount = 0;
+                let interval = setInterval(() => {
+                    if(colorCount >= 5) {
+                        clearInterval(interval);
+                        resolve(colors);
+                    } else {
+                        getRandomColor().then(color => {
+                            colors.push(color);
+                            colorCount++;
+                        })
+                    }
+                }, 0);
+            })
+            // const response = await fetch('http://colormind.io/api/', {
+            //     method: 'POST',
+            //     body: JSON.stringify({
+            //         model: "default",
+            //     })
+            // });
         
-            const data = await response.json();
-            return data.result.map(rgb => rgbToHex(rgb));
+            // const data = await response.json();
+            // return data.result.map(rgb => rgbToHex(rgb));
         }
 
         // async function getRandomPalette() {
