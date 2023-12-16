@@ -10,9 +10,9 @@ const Sketchpad = (() => {
         drawSurface = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         drawSurface.classList.add("sketchpad_drawSurface");
         drawSurface.setAttribute("width", "100%");
-            drawSurface.setAttribute("height", "100%");
-            el.appendChild(drawSurface);
-        }
+        drawSurface.setAttribute("height", "100%");
+        el.appendChild(drawSurface);
+    }
 
         function createPath() {
             let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -21,6 +21,7 @@ const Sketchpad = (() => {
             path.setAttribute("stroke-linecap", "round");
             path.setAttribute("stroke-linejoin", "round");
             path.setAttribute("stroke-width", "5");
+            path.setAttribute("stroke-opacity", "0.5");
             path.classList.add("sketchpad_drawPath");
             return path;
         }
