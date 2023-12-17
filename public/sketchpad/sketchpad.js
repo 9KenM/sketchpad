@@ -21,7 +21,7 @@ const Sketchpad = (() => {
             path.setAttribute("stroke-linecap", "round");
             path.setAttribute("stroke-linejoin", "round");
             path.setAttribute("stroke-width", "5");
-            path.setAttribute("stroke-opacity", "0.5");
+            path.setAttribute("stroke-opacity", "0.75");
             path.classList.add("sketchpad_drawPath");
             return path;
         }
