@@ -12,7 +12,7 @@ body {
     font-family: 'DM Sans', sans-serif;
     background-color: #ffffff;
     opacity: 0.8;
-    background-image: radial-gradient(#e1e1e1 0.5px, #ffffff 0.5px);
+    background-image: radial-gradient(#ccc 0.5px, #ffffff 0.5px);
     background-size: 10px 10px;
     -webkit-user-select: none;
     -moz-user-select: none;
