@@ -14,149 +14,149 @@ const Sketchpad = (() => {
         el.appendChild(drawSurface);
     }
 
-        function createPath() {
-            let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            path.setAttribute("stroke", "#"+currColor);
-            path.setAttribute("fill", "none");
-            path.setAttribute("stroke-linecap", "round");
-            path.setAttribute("stroke-linejoin", "round");
-            path.setAttribute("stroke-width", "5");
-            path.setAttribute("stroke-opacity", "0.75");
-            path.classList.add("sketchpad_drawPath");
-            return path;
-        }
-            
-        function startDrawing(event) {
-            isDrawing = true;
-            currPath = createPath();
-            drawSurface.appendChild(currPath);  
-            pathData = `M ${event.clientX} ${event.clientY} L ${event.clientX} ${event.clientY}`;
-            currPath.setAttribute("d", pathData);
-        }
+    function createPath() {
+        let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("stroke", "#"+currColor);
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke-linecap", "round");
+        path.setAttribute("stroke-linejoin", "round");
+        path.setAttribute("stroke-width", "5");
+        path.setAttribute("stroke-opacity", "0.75");
+        path.classList.add("sketchpad_drawPath");
+        return path;
+    }
         
-        function draw(event) {
-          if (!isDrawing) return;
-          pathData += ` L ${event.clientX} ${event.clientY}`;
-          currPath.setAttribute("d", pathData);
-        }
+    function startDrawing(event) {
+        isDrawing = true;
+        currPath = createPath();
+        drawSurface.appendChild(currPath);  
+        pathData = `M ${event.clientX} ${event.clientY} L ${event.clientX} ${event.clientY}`;
+        currPath.setAttribute("d", pathData);
+    }
+    
+    function draw(event) {
+        if (!isDrawing) return;
+        pathData += ` L ${event.clientX} ${event.clientY}`;
+        currPath.setAttribute("d", pathData);
+    }
+    
+    function endDrawing() {
+        isDrawing = false;
+        currPath = undefined;
+    }
         
-        function endDrawing() {
-          isDrawing = false;
-          currPath = undefined;
+    function undo() {
+        let paths = Array.from(drawSurface.getElementsByClassName("sketchpad_drawPath"));
+        if (paths.length > 0) {
+            let lastPath = paths.pop();
+            lastPath.parentNode.removeChild(lastPath);
         }
-            
-        function undo() {
-            let paths = Array.from(drawSurface.getElementsByClassName("sketchpad_drawPath"));
-            if (paths.length > 0) {
-                let lastPath = paths.pop();
-                lastPath.parentNode.removeChild(lastPath);
-            }
-        }
+    }
 
-        function clear() {
-            drawSurface.innerHTML = "";
-        }
-        
-        function setColor(color) {
-            currColor = color;
-        }
+    function clear() {
+        drawSurface.innerHTML = "";
+    }
+    
+    function setColor(color) {
+        currColor = color;
+    }
 
-        function loadCSS(path) {
-            const oldLink = document.querySelector(`link[href="${path}"]`);
-            if(oldLink) oldLink.parentNode.removeChild(oldLink);
+    function loadCSS(path) {
+        const oldLink = document.querySelector(`link[href="${path}"]`);
+        if(oldLink) oldLink.parentNode.removeChild(oldLink);
 
-            const cssLink = document.createElement("link");
-            cssLink.rel = "stylesheet";
-            cssLink.href = path + '?' + new Date().getTime();
-            document.head.appendChild(cssLink);
-        }
+        const cssLink = document.createElement("link");
+        cssLink.rel = "stylesheet";
+        cssLink.href = path + '?' + new Date().getTime();
+        document.head.appendChild(cssLink);
+    }
 
-        function init(containerEl) {
-            if(!containerEl) return;
-            loadCSS("./sketchpad/style.css");
-            containerEl.style.position = "relative";
-            containerEl.style.display = "flex";
-            createDrawSurface(containerEl);
-            containerEl.addEventListener("pointerdown", startDrawing);
-            document.addEventListener("pointermove", draw);
-            document.addEventListener("pointerup", endDrawing);
-        }
+    function init(el) {
+        if(!el) return;
+        loadCSS("./sketchpad/style.css");
+        el.style.position = "relative";
+        el.style.display = "flex";
+        createDrawSurface(el);
+        el.addEventListener("pointerdown", startDrawing);
+        document.addEventListener("pointermove", draw);
+        document.addEventListener("pointerup", endDrawing);
+    }
 
-        function download() {
-            const svg = formatSvg(drawSurface.innerHTML);
-            let parser = new DOMParser();
-            let blob = new Blob([svg], {type: "image/svg+xml;charset=utf-8"});
-            triggerDownload(URL.createObjectURL(blob));
-        }
+    function download() {
+        const svg = formatSvg(drawSurface.innerHTML);
+        let parser = new DOMParser();
+        let blob = new Blob([svg], {type: "image/svg+xml;charset=utf-8"});
+        triggerDownload(URL.createObjectURL(blob));
+    }
 
-        function formatSvg(rawData) {
-            return `<svg xmlns="http://www.w3.org/2000/svg" version="1.1">${rawData}</svg>`;
-        }
+    function formatSvg(rawData) {
+        return `<svg xmlns="http://www.w3.org/2000/svg" version="1.1">${rawData}</svg>`;
+    }
 
-        function triggerDownload(dataUrl) {
-            let downloadLink = document.createElement("a");
-            downloadLink.href = dataUrl;
-            downloadLink.download = `sketchpad-${new Date().getTime()}.svg`;
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-        }
+    function triggerDownload(dataUrl) {
+        let downloadLink = document.createElement("a");
+        downloadLink.href = dataUrl;
+        downloadLink.download = `sketchpad-${new Date().getTime()}.svg`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
 
-        function rgbToHex(rgb) {
-            const [r, g, b] = rgb;
-            const hex = ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
-            return `${hex}`;
-        }
+    function rgbToHex(rgb) {
+        const [r, g, b] = rgb;
+        const hex = ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+        return `${hex}`;
+    }
 
-        function getRandomColor() {
-            return new Promise((resolve, reject) => {
-                const rgb = [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)];
-                resolve(rgbToHex(rgb));
-            })
-        }
+    function getRandomColor() {
+        return new Promise((resolve, reject) => {
+            const rgb = [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)];
+            resolve(rgbToHex(rgb));
+        })
+    }
 
-        async function getRandomPalette() {
-            return new Promise((resolve, reject) => {
-                let colors = [];
-                let colorCount = 0;
-                let interval = setInterval(() => {
-                    if(colorCount >= 5) {
-                        clearInterval(interval);
-                        resolve(colors);
-                    } else {
-                        getRandomColor().then(color => {
-                            colors.push(color);
-                            colorCount++;
-                        })
-                    }
-                }, 0);
-            })
-            // const response = await fetch('http://colormind.io/api/', {
-            //     method: 'POST',
-            //     body: JSON.stringify({
-            //         model: "default",
-            //     })
-            // });
-        
-            // const data = await response.json();
-            // return data.result.map(rgb => rgbToHex(rgb));
-        }
+    async function getRandomPalette() {
+        return new Promise((resolve, reject) => {
+            let colors = [];
+            let colorCount = 0;
+            let interval = setInterval(() => {
+                if(colorCount >= 5) {
+                    clearInterval(interval);
+                    resolve(colors);
+                } else {
+                    getRandomColor().then(color => {
+                        colors.push(color);
+                        colorCount++;
+                    })
+                }
+            }, 0);
+        })
+        // const response = await fetch('http://colormind.io/api/', {
+        //     method: 'POST',
+        //     body: JSON.stringify({
+        //         model: "default",
+        //     })
+        // });
+    
+        // const data = await response.json();
+        // return data.result.map(rgb => rgbToHex(rgb));
+    }
 
-        // async function getRandomPalette() {
-        //     const response = await fetch(`http://www.thecolorapi.com/scheme?hex=${getRandomColor()}&mode=analogic`);
-        //     const data = await response.json();
-        //     return data.colors.map(color => color.hex.value);
-        // }
+    // async function getRandomPalette() {
+    //     const response = await fetch(`http://www.thecolorapi.com/scheme?hex=${getRandomColor()}&mode=analogic`);
+    //     const data = await response.json();
+    //     return data.colors.map(color => color.hex.value);
+    // }
 
-        return {
-            init: init,
-            undo: undo,
-            setColor: setColor,
-            clear: clear,
-            download: download,
-            getRandomPalette: getRandomPalette
-        }
+    return {
+        init: init,
+        undo: undo,
+        setColor: setColor,
+        clear: clear,
+        download: download,
+        getRandomPalette: getRandomPalette
+    }
 
-    })();
+})();
 
-    export default Sketchpad;
+export default Sketchpad;
