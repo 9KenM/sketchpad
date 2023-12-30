@@ -33,14 +33,13 @@ const Sketchpad = (() => {
             let i = pathCoords.entries();
             const coords1 = i.next().value[1];
             const coords2 = i.next().value[1];
-            coords = [...coords1, ...coords2.reverse(), coords1[0]];
+            coords = [...coords1,...[...coords2].reverse(), coords1[0]];
             path.setAttribute("fill", "#"+currColor);
         } else {
             pathCoords.forEach((value, key) => {
                 coords = [...coords, ...value];
             });    
         }
-        // const coords = pathCoords.get(id);
         const drawPath = coords.reduce((acc, curr) => {
             return acc + ` L ${curr.x} ${curr.y}`;
         }, `M ${coords[0].x} ${coords[0].y}`);
@@ -184,6 +183,10 @@ const Sketchpad = (() => {
     //     const data = await response.json();
     //     return data.colors.map(color => color.hex.value);
     // }
+
+    function debug(message) {
+        document.getElementById("debug").innerHTML = message;
+    }
 
     return {
         init: init,
