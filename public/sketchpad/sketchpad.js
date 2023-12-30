@@ -1,9 +1,9 @@
 const Sketchpad = (() => {
-    let currPath;
     let currColor = "000000";
     let isDrawing = false;
-    let pathData = "";
     let drawSurface;
+    let activePath;
+    let pathCoords = new Map();
     
     function createDrawSurface(el) {
         if(!el) return;
@@ -21,28 +21,52 @@ const Sketchpad = (() => {
         path.setAttribute("stroke-linecap", "round");
         path.setAttribute("stroke-linejoin", "round");
         path.setAttribute("stroke-width", "5");
-        path.setAttribute("stroke-opacity", "0.75");
+        path.setAttribute("opacity", "0.75");
         path.classList.add("sketchpad_drawPath");
         return path;
+    }
+
+    function updatePath() {
+        const path = activePath;
+        let coords = [];
+        if(pathCoords.size === 2) {
+            let i = pathCoords.entries();
+            const coords1 = i.next().value[1];
+            const coords2 = i.next().value[1];
+            coords = [...coords1, ...coords2.reverse(), coords1[0]];
+            path.setAttribute("fill", "#"+currColor);
+        } else {
+            pathCoords.forEach((value, key) => {
+                coords = [...coords, ...value];
+            });    
+        }
+        // const coords = pathCoords.get(id);
+        const drawPath = coords.reduce((acc, curr) => {
+            return acc + ` L ${curr.x} ${curr.y}`;
+        }, `M ${coords[0].x} ${coords[0].y}`);
+        path.setAttribute("d", drawPath);
     }
         
     function startDrawing(event) {
         isDrawing = true;
-        currPath = createPath();
-        drawSurface.appendChild(currPath);  
-        pathData = `M ${event.clientX} ${event.clientY} L ${event.clientX} ${event.clientY}`;
-        currPath.setAttribute("d", pathData);
+        pathCoords.set(event.pointerId, [{x: event.clientX, y: event.clientY}]);
+        if(pathCoords.size === 1) {
+            activePath = createPath();
+            drawSurface.appendChild(activePath);
+        }
+        updatePath();
     }
     
     function draw(event) {
         if (!isDrawing) return;
-        pathData += ` L ${event.clientX} ${event.clientY}`;
-        currPath.setAttribute("d", pathData);
+        pathCoords.set(event.pointerId, [...pathCoords.get(event.pointerId), {x: event.clientX, y: event.clientY}]);
+        updatePath();
     }
     
-    function endDrawing() {
+    function endDrawing(event) {
         isDrawing = false;
-        currPath = undefined;
+        activePath = undefined;
+        pathCoords.clear();
     }
         
     function undo() {
@@ -71,15 +95,28 @@ const Sketchpad = (() => {
         document.head.appendChild(cssLink);
     }
 
+    function handlePointerDown(event) {
+        event.preventDefault();
+        startDrawing(event);
+    }
+
+    function handlePointerMove(event) {
+        draw(event);
+    }
+
+    function handlePointerUp(event) {
+        endDrawing(event);
+    }
+
     function init(el) {
         if(!el) return;
         loadCSS("./sketchpad/style.css");
         el.style.position = "relative";
         el.style.display = "flex";
         createDrawSurface(el);
-        el.addEventListener("pointerdown", startDrawing);
-        document.addEventListener("pointermove", draw);
-        document.addEventListener("pointerup", endDrawing);
+        el.addEventListener("pointerdown", handlePointerDown);
+        document.addEventListener("pointermove", handlePointerMove);
+        document.addEventListener("pointerup", handlePointerUp);
     }
 
     function download() {
